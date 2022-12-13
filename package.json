@@ -1,0 +1,26 @@
+{
+  "name": "@my-app/monorepo",
+  "version": "1.0.0",
+  "keywords": [
+    "ethereum",
+    "vue",
+    "workspaces",
+    "yarn"
+  ],
+  "private": true,
+  "scripts": {
+    "subgraph:auth": "yarn workspace @my-app/subgraph auth",
+    "subgraph:codegen": "yarn workspace @my-app/subgraph codegen",
+    "subgraph:build": "yarn workspace @my-app/subgraph build",
+    "subgraph:deploy": "yarn workspace @my-app/subgraph deploy",
+    "vue-app:build": "yarn workspace @my-app/vue-app build",
+    "vue-app:ipfs": "yarn workspace @my-app/vue-app ipfs",
+    "vue-app:lint": "yarn workspace @my-app/vue-app lint",
+    "vue-app:serve": "yarn workspace @my-app/vue-app serve"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}
