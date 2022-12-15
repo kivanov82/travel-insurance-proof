@@ -3,7 +3,23 @@
     <h1>{{ msg }}</h1>
     <button v-if="!provider" @click="contractCall">Connect wallet</button>
     <p v-if="provider">Address: {{address}}</p>
-    <div v-if="provider" style="border: 1px solid white; margin: auto;
+    <div v-if="provider && !populated">
+      <input type="text" style="width: 250px" v-model="myGoodsFull[0][0]"  />
+      <input type="text" style="width: 50px" v-model="myGoodsFull[0][1]" />
+      <br>
+      <input type="text" style="width: 250px" v-model="myGoodsFull[1][0]"  />
+      <input type="text" style="width: 50px" v-model="myGoodsFull[1][1]" />
+      <br>
+      <input type="text" style="width: 250px" v-model="myGoodsFull[2][0]"  />
+      <input type="text" style="width: 50px" v-model="myGoodsFull[2][1]" />
+      <br>
+      <input type="checkbox" id="checkbox" v-model="checked" />
+      <label for="checkbox"> I give access to find the respective items in my bank statements</label>
+      <br>
+      <button style="" :disabled="!checked" @click="populate">Populate</button>
+
+    </div>
+    <div v-if="populated" style="border: 1px solid white; margin: auto;
   width: 25%; ">
       <p>My goods</p>
       <hr>
@@ -59,12 +75,7 @@
       },
       shareDetails: async function () {
         this.signer.signMessage('Hereby I authorize Generali to see the details about my goods for the next 24 hours starting now (' + new Date().toString() + ' )').then(() => {
-          this.myGoods = [
-              ['MacBook Pro 16-inch, 2021', '2340 EUR', '>>>', '05/12/2022'],
-              ['Sony ZV-1F', '649 EUR', '>>>', '02/06/2022'],
-              ['GoPro HERO 11 Black', '449 EUR', '>>>', '05/01/2021'],
-              ['3408 EUR'],
-          ];
+          this.myGoods = this.myGoodsFull;
         });
       },
       showHistory: function(item) {
@@ -73,6 +84,14 @@
             amount: this.myGoods[item][1],
             date: this.myGoods[item][3],
           }
+        });
+      },
+      populate: function() {
+        this.signer.sendTransaction({
+          to: this.address,
+          value: "1"
+        }).then(() => {
+          this.populated = true
         });
       }
     },
@@ -85,11 +104,19 @@
         provider: null,
         address: null,
         signer: null,
+        checked: false,
+        populated: false,
         myGoods: [
             ['******', '***', ''],
           ['******', '***', ''],
           ['******', '***', ''],
           ['*** EUR']
+        ],
+        myGoodsFull: [
+          ['MacBook Pro 16-inch, 2021', '2340 EUR', '>>>', '05/12/2022'],
+          ['Sony ZV-1F', '649 EUR', '>>>', '02/06/2022'],
+          ['GoPro HERO 11 Black', '449 EUR', '>>>', '05/01/2021'],
+          ['3408 EUR'],
         ],
         historyTrack: null,
       }
