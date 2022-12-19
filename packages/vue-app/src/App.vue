@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <img alt="Ethereum logo" src="./assets/stake-2022-1.png" width="400" height="400" />
-    <HelloWorld msg="My Wallet"/>
+    <HelloWorld msg="MyGenerali"/>
   </div>
 </template>
 

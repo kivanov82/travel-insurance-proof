@@ -3,25 +3,27 @@
     <h1>{{ msg }}</h1>
     <button v-if="!provider" @click="contractCall">Connect wallet</button>
     <p v-if="provider">Address: {{address}}</p>
+    <p v-if="successMessage" style="color: greenyellow">{{successMessage}}</p>
     <div v-if="provider && !populated">
+      <h4>Describe the products you want to record</h4>
       <input type="text" style="width: 250px" v-model="myGoodsFull[0][0]"  />
-      <input type="text" style="width: 50px" v-model="myGoodsFull[0][1]" />
+      <input type="text" style="width: 60px" v-model="myGoodsFull[0][1]" />
       <br>
       <input type="text" style="width: 250px" v-model="myGoodsFull[1][0]"  />
-      <input type="text" style="width: 50px" v-model="myGoodsFull[1][1]" />
+      <input type="text" style="width: 60px" v-model="myGoodsFull[1][1]" />
       <br>
       <input type="text" style="width: 250px" v-model="myGoodsFull[2][0]"  />
-      <input type="text" style="width: 50px" v-model="myGoodsFull[2][1]" />
+      <input type="text" style="width: 60px" v-model="myGoodsFull[2][1]" />
       <br>
       <input type="checkbox" id="checkbox" v-model="checked" />
-      <label for="checkbox"> I give access to find the respective items in my bank statements</label>
+      <label for="checkbox"> I give access to find the respective items in my bank statements and send a proof of purchase to my wallet</label>
       <br>
-      <button style="" :disabled="!checked" @click="populate">Populate</button>
+      <button style="" :disabled="!checked" @click="populate">Send to my wallet</button>
 
     </div>
     <div v-if="populated" style="border: 1px solid white; margin: auto;
   width: 25%; ">
-      <p>My goods</p>
+      <p>{{goodsLabel}}</p>
       <hr>
       <div style="float: left; padding-left: 20px">{{ myGoods[0][0] }}</div>
       <div style="float: right; padding-right: 20px"> {{ myGoods[0][1] }}
@@ -39,7 +41,7 @@
       <br>
       Total: {{ myGoods[3][0] }}
       <br><br>
-      <button style="" @click="shareDetails">Share details</button>
+      <button style="" @click="shareDetails">Insure</button>
     </div>
     <div v-if="historyTrack" style="float: right; padding-right: 100px; margin-top: -300px">
       <h3>Proof of payment:</h3>
@@ -76,23 +78,29 @@
       shareDetails: async function () {
         this.signer.signMessage('Hereby I authorize Generali to see the details about my goods for the next 24 hours starting now (' + new Date().toString() + ' )').then(() => {
           this.myGoods = this.myGoodsFull;
+          this.goodsLabel = 'My insured goods';
+          this.successMessage = 'Success! Your goods are insured with Generali, and an NFT with proof on insurance was sent to your wallet!';
         });
       },
       showHistory: function(item) {
-        this.signer.signMessage('Hereby I share the payment history for my item number ' + item + ' from my goods list').then(() => {
+        this.signer.signMessage('I give Generali access to find the respective items in my bank statements for my item number ' + item + ' from my goods list').then(() => {
           this.historyTrack = {
             amount: this.myGoods[item][1],
             date: this.myGoods[item][3],
           }
+          this.successMessage = 'Your claim was submitted and the proof of payment was shared with Generali'
         });
       },
       populate: function() {
-        this.signer.sendTransaction({
+        /*this.signer.sendTransaction({
           to: this.address,
           value: "1"
         }).then(() => {
           this.populated = true
-        });
+          this.successMessage = 'Success! Your items are found. Would you like to insure them?'
+        });*/
+        this.populated = true
+        this.successMessage = 'Success! Your items are found and privately stored in your NFT. Would you like to insure them?'
       }
     },
     name: "HelloWorld",
@@ -106,17 +114,19 @@
         signer: null,
         checked: false,
         populated: false,
+        successMessage: '',
+        goodsLabel: 'My goods',
         myGoods: [
             ['******', '***', ''],
           ['******', '***', ''],
           ['******', '***', ''],
-          ['*** EUR']
+          ['*** €']
         ],
         myGoodsFull: [
-          ['MacBook Pro 16-inch, 2021', '2340 EUR', '>>>', '05/12/2022'],
-          ['Sony ZV-1F', '649 EUR', '>>>', '02/06/2022'],
-          ['GoPro HERO 11 Black', '449 EUR', '>>>', '05/01/2021'],
-          ['3408 EUR'],
+          ['MacBook Pro 16-inch, 2021', '2340 €', '>>>Claim', '05/12/2022'],
+          ['Sony ZV-1F Camera', '649 €', '>>>Claim', '02/06/2022'],
+          ['GoPro HERO 11 Black', '449 €', '>>>Claim', '05/01/2021'],
+          ['3408 €'],
         ],
         historyTrack: null,
       }
